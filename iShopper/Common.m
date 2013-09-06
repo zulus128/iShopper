@@ -79,9 +79,17 @@
     [request setHTTPMethod:@"POST"];
     [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [request setValue:@"multipart/form-data" forHTTPHeaderField:@"Content-Type"];
-//    [request setValue:@"gzip" forHTTPHeaderField:@"Accept-Encoding"];
-    [request setHTTPBody:postData];
+//    [request setHTTPBody:postData];
+
+    NSMutableData *postbody = [NSMutableData data];
+//    [postbody appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+    [postbody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"thefile\"; filename=\"data\"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
     
+//    [postbody appendData:[[NSString stringWithString:@"Content-Type: application/octet-stream\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+    [postbody appendData:postData];
+//    [postbody appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+//    
+    [request setHTTPBody:postbody];
 
     NSURLResponse *response;
     NSData *POSTReply1 = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
