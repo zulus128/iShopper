@@ -7,6 +7,7 @@
 //
 
 #import "StreamTableViewController.h"
+#import "Common.h"
 
 @interface StreamTableViewController ()
 
@@ -32,6 +33,8 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
+    [[Common instance] authorize];
 }
 
 - (void)didReceiveMemoryWarning

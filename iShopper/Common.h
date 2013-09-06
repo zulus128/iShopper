@@ -6,8 +6,20 @@
 //  Copyright (c) 2013 Zul. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#define SERVICE_URL @"http://si.informer.com/si.iphone.php"
 
 @interface Common : NSObject
+
++ (Common*) instance;
+
+-(void) authorize;
+
+@end
+
+@interface NSData (DDData)
+
+// gzip compression utilities
+- (NSData *)gzipInflate;
+- (NSData *)gzipDeflate;
 
 @end
