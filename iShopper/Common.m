@@ -35,15 +35,59 @@
 	return self;
 }
 
--(void) authorize {
+- (void) sendToServer: (NSDictionary*) values {
+
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:values
+                                                       options:NSJSONWritingPrettyPrinted // Pass 0 if you don't care about the readability of the generated string
+                                                         error:&error];
+    
+    if (!jsonData) {
+        
+        NSLog(@"Got an error: %@", error);
+        return;
+    }
+    
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    NSLog(@"Sending: %@", jsonString);
+    
+    NSData *postData1 = [jsonString dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
+    NSData *postData = [postData1 gzipDeflate];
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+    [request setURL:[NSURL URLWithString:SERVICE_URL]];
+    [request setHTTPMethod:@"POST"];
+    
+    NSString *boundary = @"---------------------------14737809831466499882746641449";
+    NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@",boundary];
+    [request addValue:contentType forHTTPHeaderField: @"Content-Type"];
+    NSMutableData *postbody = [NSMutableData data];
+    [postbody appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+    [postbody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"data\"; filename=\"%@\"\r\n", @"data"] dataUsingEncoding:NSUTF8StringEncoding]];
+    [postbody appendData:[[NSString stringWithFormat:@"Content-Type: application/octet-stream\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+    [postbody appendData:[NSData dataWithData:postData]];
+    [postbody appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+    [request setHTTPBody:postbody];
+    NSString *postLength = [NSString stringWithFormat:@"%d", [postbody length]];
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    
+    NSURLResponse *response;
+    NSData *POSTReply1 = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
+    NSData *POSTReply = [POSTReply1 gzipInflate];
+    NSString *theReply = [[NSString alloc] initWithBytes:[POSTReply bytes] length:[POSTReply length] encoding: NSASCIIStringEncoding];
+    NSLog(@"Reply: %@", theReply);
+    
+
+}
+
+- (void) authorize {
 
     NSMutableDictionary* dictionaryToOutput = [NSMutableDictionary dictionary];
     [dictionaryToOutput setObject:@"authorize" forKey:@"mode"];
-    [dictionaryToOutput setObject:@"testuser@example.com" forKey:@"email"];
+    [dictionaryToOutput setObject:@"vkassin@mail.ru" forKey:@"email"];
     [dictionaryToOutput setObject:@"AI" forKey:@"authServiceName"];
     [dictionaryToOutput setObject:@"pass" forKey:@"password"];
     [dictionaryToOutput setObject:@"Test User" forKey:@"name"];
-    [dictionaryToOutput setObject:@"0" forKey:@"deviceData"];
+    [dictionaryToOutput setObject:@"e8obrez9k1" forKey:@"deviceData"];
     [dictionaryToOutput setObject:[NSNumber numberWithInt:1] forKey:@"buildNum"];
 
     NSMutableDictionary* systemInfo = [NSMutableDictionary dictionary];
@@ -56,61 +100,39 @@
 
     [dictionaryToOutput setObject:systemInfo forKey:@"systemInfo"];
 
-    NSError *error;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dictionaryToOutput
-                                                       options:NSJSONWritingPrettyPrinted // Pass 0 if you don't care about the readability of the generated string
-                                                         error:&error];
-    
-    if (! jsonData) {
-        NSLog(@"Got an error: %@", error);
-        return;
-    } //else {
-        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-        NSLog(@"%@", jsonString);
-    //}
-    
-    
-    NSData *postData1 = [jsonString dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
-    NSData *postData = [postData1 gzipDeflate];
-    NSString *postLength = [NSString stringWithFormat:@"%d", [postData length]];
+    [self sendToServer:dictionaryToOutput];
+}
 
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    [request setURL:[NSURL URLWithString:SERVICE_URL]];
-    [request setHTTPMethod:@"POST"];
-    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
-    [request setValue:@"multipart/form-data" forHTTPHeaderField:@"Content-Type"];
-//    [request setHTTPBody:postData];
+- (void) check_valid {
 
-    NSMutableData *postbody = [NSMutableData data];
-//    [postbody appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-    [postbody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"thefile\"; filename=\"data\"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
-    
-//    [postbody appendData:[[NSString stringWithString:@"Content-Type: application/octet-stream\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
-    [postbody appendData:postData];
-//    [postbody appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-//    
-    [request setHTTPBody:postbody];
+    NSMutableDictionary* dictionaryToOutput = [NSMutableDictionary dictionary];
+    [dictionaryToOutput setObject:@"check_valid" forKey:@"mode"];
+    [dictionaryToOutput setObject:@"104267017|vkassin@mail.ru|pass|aW5mb3JtZXIuY29t" forKey:@"aiAccessToken"];
+    [dictionaryToOutput setObject:@"1dvi926lwg11s317mq1bpknuddfp1309071519" forKey:@"guid"];
+    [dictionaryToOutput setObject:[NSNumber numberWithInt:1] forKey:@"buildNum"];
 
-    NSURLResponse *response;
-    NSData *POSTReply1 = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
-    NSData *POSTReply = [POSTReply1 gzipInflate];
-    NSString *theReply = [[NSString alloc] initWithBytes:[POSTReply bytes] length:[POSTReply length] encoding: NSASCIIStringEncoding];
-//    NSString *theReply = [[NSString alloc] initWithBytes:[POSTReply bytes] length:[POSTReply length] encoding: NSUTF8StringEncoding];
-    NSLog(@"Reply: %@", theReply);
-//    NSLog(@"Reply: %@", [POSTReply gzipDeflate]);
+    [self sendToServer:dictionaryToOutput];
+
+}
+
+- (void) update {
     
-//    NSData *decodedGzippedData = [NSData dataFromBase64String:theReply];
-//    NSData* unGzippedJsonData = [ASIHTTPRequest uncompressZippedData:decodedGzippedData];
-//    NSString* unGzippedJsonString = [[NSString alloc] initWithData:unGzippedJsonData encoding:NSASCIIStringEncoding];
-//    NSLog(@"Result: %@", unGzippedJsonString);
+    NSMutableDictionary* dictionaryToOutput = [NSMutableDictionary dictionary];
+    [dictionaryToOutput setObject:@"update" forKey:@"mode"];
+    [dictionaryToOutput setObject:@"104267017|vkassin@mail.ru|pass|aW5mb3JtZXIuY29t" forKey:@"aiAccessToken"];
+    [dictionaryToOutput setObject:@"1dvi926lwg11s317mq1bpknuddfp1309071519" forKey:@"guid"];
+    [dictionaryToOutput setObject:[NSNumber numberWithInt:1] forKey:@"buildNum"];
+    
+    [self sendToServer:dictionaryToOutput];
+    
 }
 
 @end
 
 @implementation NSData (DDData)
 
-- (NSData *)gzipInflate
-{
+- (NSData *)gzipInflate {
+    
     if ([self length] == 0) return self;
     
     unsigned full_length = [self length];
@@ -152,8 +174,8 @@
     else return nil;
 }
 
-- (NSData *)gzipDeflate
-{
+- (NSData *)gzipDeflate {
+    
     if ([self length] == 0) return self;
     
     z_stream strm;

@@ -12,7 +12,9 @@
 
 + (Common*) instance;
 
--(void) authorize;
+- (void) authorize;
+- (void) check_valid;
+- (void) update;
 
 @end
 
