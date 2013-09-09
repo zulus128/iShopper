@@ -7,6 +7,7 @@
 //
 
 #define SERVICE_URL @"http://si.informer.com/si.iphone.php"
+#define PACKAGE_ID @"bundleId"
 
 @interface Common : NSObject
 
@@ -16,6 +17,7 @@
 - (void) check_valid;
 - (void) update;
 
+- (void) sendNewToServer: (NSArray*) localApps;
 - (BOOL) isAppOld:(NSString*) pn;
 
 //- (void) detectApps;

@@ -38,7 +38,7 @@
 	return self;
 }
 
-- (void) sendToServer: (NSDictionary*) values {
+- (NSData*) sendToServer: (NSDictionary*) values {
 
     NSError *error;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:values
@@ -48,7 +48,7 @@
     if (!jsonData) {
         
         NSLog(@"Got an error: %@", error);
-        return;
+        return nil;
     }
     
     NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
@@ -80,6 +80,7 @@
     
     NSLog(@"Reply: %@", theReply);
     
+    return POSTReply;
 
 }
 
@@ -129,6 +130,46 @@
     
     [self sendToServer:dictionaryToOutput];
     
+}
+
+- (void) sendNewToServer: (NSArray*) localApps {
+
+    NSMutableDictionary* dictionaryToOutput = [NSMutableDictionary dictionary];
+    [dictionaryToOutput setObject:@"add_apps" forKey:@"mode"];
+    [dictionaryToOutput setObject:@"104267017|vkassin@mail.ru|pass|aW5mb3JtZXIuY29t" forKey:@"aiAccessToken"];
+    [dictionaryToOutput setObject:@"1dvi926lwg11s317mq1bpknuddfp1309071519" forKey:@"guid"];
+    [dictionaryToOutput setObject:[NSNumber numberWithInt:1] forKey:@"buildNum"];
+    
+    NSMutableArray* appInfo = [NSMutableArray array];
+
+    for(NSDictionary* item in localApps) {
+        if(![self isAppOld:[item objectForKey:PACKAGE_ID]]) {
+
+            NSMutableDictionary* app = [NSMutableDictionary dictionary];
+            [app setObject:((NSString*)[item objectForKey:PACKAGE_ID]).lowercaseString forKey:@"pn"];
+            [app setObject:@"Network Location" forKey:@"n"];
+            [app setObject:@"2.2" forKey:@"vn"];
+            [app setObject:@"2" forKey:@"vc"];
+            
+            [appInfo addObject:app];
+        }
+    }
+    
+    [dictionaryToOutput setObject:appInfo forKey:@"appList"];
+
+    NSData* reply = [self sendToServer:dictionaryToOutput];
+    
+    if(reply != nil) {
+    
+        [self storeFromServer:reply];
+    }
+}
+
+- (void) storeFromServer:(NSData*) data {
+    
+    NSError* error;
+    NSDictionary* dict = [NSJSONSerialization JSONObjectWithData:data options:NSDataReadingUn error:&error];
+    NSLog(@"storeFromServer: %@", dict);
 }
 
 - (BOOL) isAppOld:(NSString*) pn {

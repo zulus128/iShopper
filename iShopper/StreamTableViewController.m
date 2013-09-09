@@ -99,11 +99,11 @@
     NSDictionary* dict = (NSDictionary*)[self.detectedApps objectAtIndex:indexPath.row];
     label.text = [dict objectForKey:@"trackName"];
     
-    BOOL old = [[Common instance] isAppOld:[dict objectForKey:@"bundleId"]];
+    BOOL old = [[Common instance] isAppOld:[dict objectForKey:PACKAGE_ID]];
     UILabel *label1 = (UILabel *)[cell viewWithTag:101];
     label1.text = old?@"OLD":@"NEW";
     
-    NSLog(@"%@", dict);
+//    NSLog(@"%@", dict);
     return cell;
 }
 
@@ -163,6 +163,7 @@
 
 - (void) addApps {
 
+    [[Common instance] sendNewToServer:self.detectedApps];
 }
 
 - (void) detectApps {
