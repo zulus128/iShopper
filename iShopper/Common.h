@@ -8,6 +8,7 @@
 
 #define SERVICE_URL @"http://si.informer.com/si.iphone.php"
 #define PACKAGE_ID @"bundleId"
+#define APPLIST_ID @"appList"
 
 @interface Common : NSObject
 
@@ -22,7 +23,7 @@
 
 //- (void) detectApps;
 
-@property (nonatomic, retain) NSDictionary* dataFromServer;
+@property (nonatomic, retain) NSMutableDictionary* dataFromServer;
 
 @end
 

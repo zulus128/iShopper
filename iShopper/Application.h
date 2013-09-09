@@ -8,9 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
-@interface Application : NSObject
+@interface Application : NSObject {
 
-@property (nonatomic, retain) NSString* name;
-@property (nonatomic, retain) NSString* packageName;
+    NSString* name;
+    NSString* packageName;
+
+}
+
+- (id)initWithPackageName:(NSString *)pn;
 
 @end

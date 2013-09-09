@@ -8,6 +8,7 @@
 
 #import "Common.h"
 #import "zlib.h"
+#import "Application.h"
 
 @implementation Common
 
@@ -128,7 +129,12 @@
     [dictionaryToOutput setObject:@"1dvi926lwg11s317mq1bpknuddfp1309071519" forKey:@"guid"];
     [dictionaryToOutput setObject:[NSNumber numberWithInt:1] forKey:@"buildNum"];
     
-    [self sendToServer:dictionaryToOutput];
+    NSData* reply = [self sendToServer:dictionaryToOutput];
+    
+    if(reply != nil) {
+        
+        [self storeFromServer:reply];
+    }
     
 }
 
@@ -155,7 +161,7 @@
         }
     }
     
-    [dictionaryToOutput setObject:appInfo forKey:@"appList"];
+    [dictionaryToOutput setObject:appInfo forKey:APPLIST_ID];
 
     NSData* reply = [self sendToServer:dictionaryToOutput];
     
@@ -167,9 +173,17 @@
 
 - (void) storeFromServer:(NSData*) data {
     
+    self.dataFromServer = [NSMutableDictionary dictionary];
     NSError* error;
-    NSDictionary* dict = [NSJSONSerialization JSONObjectWithData:data options:NSDataReadingUn error:&error];
-    NSLog(@"storeFromServer: %@", dict);
+    NSDictionary* dict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
+//    NSLog(@"storeFromServer: %@", dict);
+    NSArray* arr = [dict objectForKey:APPLIST_ID];
+    for(NSDictionary* item in arr){
+        
+        NSString* pn = [item objectForKey:@"pn"];
+        Application* app = [[Application alloc] initWithPackageName:pn];
+        [self.dataFromServer setObject:app forKey:pn];
+    }
 }
 
 - (BOOL) isAppOld:(NSString*) pn {

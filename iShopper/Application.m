@@ -10,4 +10,17 @@
 
 @implementation Application
 
+- (id)initWithPackageName:(NSString *)pn {
+    
+    self = [super init];
+    
+	if(self !=nil) {
+     
+        packageName = pn;
+        
+	}
+	return self;
+
+}
+
 @end
