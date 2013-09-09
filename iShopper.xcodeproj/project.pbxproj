@@ -25,6 +25,9 @@
 		9C1EA22017D984B800AA9675 /* second@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C1EA21F17D984B800AA9675 /* second@2x.png */; };
 		9C1EA22A17D98FCD00AA9675 /* StreamTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1EA22917D98FCD00AA9675 /* StreamTableViewController.m */; };
 		9C1EA22D17D9916C00AA9675 /* Common.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1EA22C17D9916C00AA9675 /* Common.m */; };
+		9C4E569417DDA74800E37906 /* iHasApp.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C4E569217DDA74800E37906 /* iHasApp.m */; };
+		9C4E569517DDA74800E37906 /* schemeApps.json in Resources */ = {isa = PBXBuildFile; fileRef = 9C4E569317DDA74800E37906 /* schemeApps.json */; };
+		9C4E569817DDE01A00E37906 /* Application.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C4E569717DDE01900E37906 /* Application.m */; };
 		9C543C5917D9CD6800148722 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C543C5817D9CD6800148722 /* libz.dylib */; };
 /* End PBXBuildFile section */
 
@@ -54,6 +57,11 @@
 		9C1EA22917D98FCD00AA9675 /* StreamTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StreamTableViewController.m; sourceTree = "<group>"; };
 		9C1EA22B17D9916C00AA9675 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
 		9C1EA22C17D9916C00AA9675 /* Common.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Common.m; sourceTree = "<group>"; };
+		9C4E569117DDA74800E37906 /* iHasApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iHasApp.h; sourceTree = "<group>"; };
+		9C4E569217DDA74800E37906 /* iHasApp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iHasApp.m; sourceTree = "<group>"; };
+		9C4E569317DDA74800E37906 /* schemeApps.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = schemeApps.json; sourceTree = "<group>"; };
+		9C4E569617DDE01900E37906 /* Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application.h; sourceTree = "<group>"; };
+		9C4E569717DDE01900E37906 /* Application.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Application.m; sourceTree = "<group>"; };
 		9C543C5817D9CD6800148722 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -75,7 +83,7 @@
 		9C1EA1E917D984B700AA9675 = {
 			isa = PBXGroup;
 			children = (
-				9C543C5817D9CD6800148722 /* libz.dylib */,
+				9C4E569017DDA73000E37906 /* iHasApp */,
 				9C1EA22717D98CCD00AA9675 /* storyboards */,
 				9C1EA22617D98CB800AA9675 /* img */,
 				9C1EA1FB17D984B700AA9675 /* iShopper */,
@@ -113,7 +121,10 @@
 				9C1EA22917D98FCD00AA9675 /* StreamTableViewController.m */,
 				9C1EA21A17D984B800AA9675 /* MyAppsViewController.h */,
 				9C1EA21B17D984B800AA9675 /* MyAppsViewController.m */,
+				9C4E569617DDE01900E37906 /* Application.h */,
+				9C4E569717DDE01900E37906 /* Application.m */,
 				9C1EA1FC17D984B700AA9675 /* Supporting Files */,
+				9C543C5817D9CD6800148722 /* libz.dylib */,
 			);
 			path = iShopper;
 			sourceTree = "<group>";
@@ -150,6 +161,16 @@
 				9C1EA21017D984B800AA9675 /* MainStoryboard_iPad.storyboard */,
 			);
 			name = storyboards;
+			sourceTree = "<group>";
+		};
+		9C4E569017DDA73000E37906 /* iHasApp */ = {
+			isa = PBXGroup;
+			children = (
+				9C4E569117DDA74800E37906 /* iHasApp.h */,
+				9C4E569217DDA74800E37906 /* iHasApp.m */,
+				9C4E569317DDA74800E37906 /* schemeApps.json */,
+			);
+			name = iHasApp;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -213,6 +234,7 @@
 				9C1EA21917D984B800AA9675 /* first@2x.png in Resources */,
 				9C1EA21E17D984B800AA9675 /* second.png in Resources */,
 				9C1EA22017D984B800AA9675 /* second@2x.png in Resources */,
+				9C4E569517DDA74800E37906 /* schemeApps.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -228,6 +250,8 @@
 				9C1EA21C17D984B800AA9675 /* MyAppsViewController.m in Sources */,
 				9C1EA22A17D98FCD00AA9675 /* StreamTableViewController.m in Sources */,
 				9C1EA22D17D9916C00AA9675 /* Common.m in Sources */,
+				9C4E569417DDA74800E37906 /* iHasApp.m in Sources */,
+				9C4E569817DDE01A00E37906 /* Application.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

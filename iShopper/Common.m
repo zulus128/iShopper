@@ -29,8 +29,11 @@
 - (id) init {
 	
 	self = [super init];
+
 	if(self !=nil) {
-        
+
+        self.dataFromServer = [NSDictionary dictionary];
+
 	}
 	return self;
 }
@@ -74,6 +77,7 @@
     NSData *POSTReply1 = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
     NSData *POSTReply = [POSTReply1 gzipInflate];
     NSString *theReply = [[NSString alloc] initWithBytes:[POSTReply bytes] length:[POSTReply length] encoding: NSASCIIStringEncoding];
+    
     NSLog(@"Reply: %@", theReply);
     
 
@@ -127,11 +131,16 @@
     
 }
 
+- (BOOL) isAppOld:(NSString*) pn {
+    
+    return ([self.dataFromServer objectForKey:pn.lowercaseString] != nil);
+}
+
 @end
 
 @implementation NSData (DDData)
 
-- (NSData *)gzipInflate {
+- (NSData *) gzipInflate {
     
     if ([self length] == 0) return self;
     
@@ -174,7 +183,7 @@
     else return nil;
 }
 
-- (NSData *)gzipDeflate {
+- (NSData *) gzipDeflate {
     
     if ([self length] == 0) return self;
     

@@ -16,12 +16,18 @@
 - (void) check_valid;
 - (void) update;
 
+- (BOOL) isAppOld:(NSString*) pn;
+
+//- (void) detectApps;
+
+@property (nonatomic, retain) NSDictionary* dataFromServer;
+
 @end
 
 @interface NSData (DDData)
 
 // gzip compression utilities
-- (NSData *)gzipInflate;
-- (NSData *)gzipDeflate;
+- (NSData *) gzipInflate;
+- (NSData *) gzipDeflate;
 
 @end
