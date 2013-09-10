@@ -140,6 +140,8 @@
 
 - (void) sendNewToServer: (NSArray*) localApps {
 
+    NSLog(@"local apps = %@", localApps);
+    
     NSMutableDictionary* dictionaryToOutput = [NSMutableDictionary dictionary];
     [dictionaryToOutput setObject:@"add_apps" forKey:@"mode"];
     [dictionaryToOutput setObject:@"104267017|vkassin@mail.ru|pass|aW5mb3JtZXIuY29t" forKey:@"aiAccessToken"];

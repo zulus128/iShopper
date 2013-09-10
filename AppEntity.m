@@ -14,4 +14,12 @@
 @dynamic packageName;
 @dynamic name;
 
+- (void)awakeFromInsert {
+
+    AppEntity* ae = [[AppEntity MR_findAllSortedBy:@"appEntityID" ascending:YES] lastObject];
+    NSNumber* count = [ae valueForKey:@"appEntityID"];
+//    NSNumber *count = [AppEntity MR_numberOfEntities];
+    [self setValue:[NSNumber numberWithInt:(count.intValue + 1)] forKey:@"appEntityID"];
+    [super awakeFromInsert];
+}
 @end

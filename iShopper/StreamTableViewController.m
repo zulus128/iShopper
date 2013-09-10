@@ -9,11 +9,12 @@
 #import "StreamTableViewController.h"
 #import "Common.h"
 #import "iHasApp.h"
+#import "AppEntity.h"
 
 @interface StreamTableViewController ()
 
 @property (nonatomic, strong) iHasApp *detectionObject;
-@property (nonatomic, strong) NSArray *detectedApps;
+//@property (nonatomic, strong) NSArray *detectedApps;
 
 @end
 
@@ -68,9 +69,12 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     
-	if(self.detectedApps) {
+    int cnt = [AppEntity MR_numberOfEntities].intValue;
+
+//	if(self.detectedApps) {
+    if(cnt) {
         
-		return [NSString stringWithFormat:@"%i Apps Detected", self.detectedApps.count];
+		return [NSString stringWithFormat:@"%i Apps Detected", /*self.detectedApps.count*/cnt];
 	}
     else {
         
@@ -86,20 +90,32 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
     // Return the number of rows in the section.
-    return self.detectedApps.count;
+    NSNumber *count = [AppEntity MR_numberOfEntities];
+    NSLog(@"count = %d", count.intValue);
+    
+//    return self.detectedApps.count;
+    
+    return count.intValue;
+
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
     static NSString *CellIdentifier = @"streamCell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
     // Configure the cell...
-    UILabel *label = (UILabel *)[cell viewWithTag:100];
-    NSDictionary* dict = (NSDictionary*)[self.detectedApps objectAtIndex:indexPath.row];
-    label.text = [dict objectForKey:@"trackName"];
     
-    BOOL old = [[Common instance] isAppOld:[dict objectForKey:PACKAGE_ID]];
+//    NSDictionary* dict = (NSDictionary*)[self.detectedApps objectAtIndex:indexPath.row];
+    AppEntity *ae = [AppEntity MR_findFirstByAttribute:@"appEntityID" withValue:[NSNumber numberWithInt:indexPath.row + 1] ];
+
+    
+    UILabel *label = (UILabel *)[cell viewWithTag:100];
+//    label.text = [dict objectForKey:@"trackName"];
+    label.text = [ae valueForKey:@"name"];
+    
+//    BOOL old = [[Common instance] isAppOld:[dict objectForKey:PACKAGE_ID]];
+    BOOL old = [[Common instance] isAppOld:[ae valueForKey:@"packageName"]];
     UILabel *label1 = (UILabel *)[cell viewWithTag:101];
     label1.text = old?@"OLD":@"NEW";
     
@@ -162,8 +178,19 @@
 #pragma mark - iHasApp methods
 
 - (void) addApps {
-
-    [[Common instance] sendNewToServer:self.detectedApps];
+ 
+//    [[Common instance] sendNewToServer:self.detectedApps];
+    
+    NSMutableArray* fullList = [NSMutableArray array];
+    NSArray* arr = [AppEntity MR_findAll];
+    for(AppEntity* ae in arr) {
+        
+        NSMutableDictionary* dict = [NSMutableDictionary dictionary];
+        [dict setValue:[ae valueForKey:@"packageName"] forKey:PACKAGE_ID];
+        [fullList addObject:dict];
+    }
+    
+    [[Common instance] sendNewToServer:fullList];
 }
 
 - (void) detectApps {
@@ -177,23 +204,28 @@
     
     [self.detectionObject detectAppDictionariesWithIncremental:^(NSArray *appDictionaries) {
         
-        NSLog(@"Incremental appDictionaries.count: %i", appDictionaries.count);
-        NSMutableArray *newAppDictionaries = [NSMutableArray arrayWithArray:self.detectedApps];
-        [newAppDictionaries addObjectsFromArray:appDictionaries];
-        self.detectedApps = newAppDictionaries;
-        [self.tableView reloadData];
+//        NSLog(@"Incremental appDictionaries.count: %i", appDictionaries.count);
+//        NSMutableArray *newAppDictionaries = [NSMutableArray arrayWithArray:self.detectedApps];
+//        [newAppDictionaries addObjectsFromArray:appDictionaries];
+//        self.detectedApps = newAppDictionaries;
+//        [self.tableView reloadData];
         
     } withSuccess:^(NSArray *appDictionaries) {
         
 //        NSLog(@"Successful appDictionaries.count: %i %@", appDictionaries.count, appDictionaries);
-        self.detectedApps = appDictionaries;
+//        self.detectedApps = appDictionaries;
+        
+        [AppEntity MR_truncateAll];
+        NSArray *apps = [AppEntity MR_importFromArray:appDictionaries];
+//        NSLog(@"imported = %@", apps);
+        
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
         [self.tableView reloadData];
         
     } withFailure:^(NSError *error) {
         
         NSLog(@"Error: %@", error.localizedDescription);
-        self.detectedApps = [NSArray array];
+//        self.detectedApps = [NSArray array];
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error"
                                                             message:error.localizedDescription
@@ -204,7 +236,7 @@
         [self.tableView reloadData];
     }];
     
-    self.detectedApps = nil;
+//    self.detectedApps = nil;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
     [self.tableView reloadData];
     
