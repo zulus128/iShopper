@@ -33,7 +33,7 @@
 
 	if(self !=nil) {
 
-        self.dataFromServer = [NSDictionary dictionary];
+        self.dataFromServer = [NSMutableDictionary dictionary];
 
 	}
 	return self;

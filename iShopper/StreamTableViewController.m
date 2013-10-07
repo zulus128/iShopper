@@ -216,7 +216,7 @@
 //        self.detectedApps = appDictionaries;
         
         [AppEntity MR_truncateAll];
-        NSArray *apps = [AppEntity MR_importFromArray:appDictionaries];
+//        NSArray *apps = [AppEntity MR_importFromArray:appDictionaries];
 //        NSLog(@"imported = %@", apps);
         
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
