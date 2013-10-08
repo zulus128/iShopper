@@ -116,6 +116,8 @@
                     </view>
                     <navigationItem key="navigationItem" id="89c-G0-lWI"/>
                     <connections>
+                        <outlet property="mailfield" destination="HAo-hZ-TCY" id="4Qp-7s-lYy"/>
+                        <outlet property="pass1" destination="gz6-5N-joF" id="eAM-tx-yUV"/>
                         <segue destination="4" kind="push" identifier="goTabBar" id="AMl-Ya-ZHQ"/>
                     </connections>
                 </viewController>

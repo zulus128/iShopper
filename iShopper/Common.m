@@ -9,6 +9,7 @@
 #import "Common.h"
 #import "zlib.h"
 #import "Application.h"
+#import <CommonCrypto/CommonDigest.h>
 
 @implementation Common
 
@@ -92,6 +93,13 @@
 
 - (BOOL) authorizeWithEmail:(NSString*)mail andPassword:(NSString*)pass andType:(int)type {
 
+    if(![self NSStringIsValidEmail:mail]){
+        
+        [[[UIAlertView alloc] initWithTitle:@"Error" message:@"E-mail is not valid" delegate:nil cancelButtonTitle:@"OK"otherButtonTitles:nil] show];
+        
+        return NO;
+    }
+    
     NSString* atype = SAUTH_NEW;
     switch (type) {
         case AUTH_NEW:
@@ -108,7 +116,7 @@
 //    [dictionaryToOutput setObject:@"AI" forKey:@"authServiceName"];
     [dictionaryToOutput setObject:atype forKey:@"authServiceName"];
 //    [dictionaryToOutput setObject:@"pass" forKey:@"password"];
-    [dictionaryToOutput setObject:pass forKey:@"password"];
+    [dictionaryToOutput setObject:[self md5:pass] forKey:@"password"];
     [dictionaryToOutput setObject:@"Test User" forKey:@"name"];
     [dictionaryToOutput setObject:@"e8obrez9k1" forKey:@"deviceData"];
     [dictionaryToOutput setObject:[NSNumber numberWithInt:1] forKey:@"buildNum"];
@@ -137,8 +145,8 @@
         }
         else {
             
-            NSString* atoken = [reply objectForKey:JKEY_GUID];
-            NSString* guid = [[reply objectForKey:JKEY_USER] objectForKey:JKEY_ACCESSTOKEN];
+            NSString* guid = [reply objectForKey:JKEY_GUID];
+            NSString* atoken = [[reply objectForKey:JKEY_USER] objectForKey:JKEY_ACCESSTOKEN];
             [[NSUserDefaults standardUserDefaults] setObject:atoken forKey:KEY_ACCESSTOKEN];
             [[NSUserDefaults standardUserDefaults] setObject:guid forKey:KEY_GUID];
             [[NSUserDefaults standardUserDefaults] synchronize];
@@ -155,7 +163,7 @@
 - (BOOL) check_valid {
 
     NSString* atoken = [[NSUserDefaults standardUserDefaults] stringForKey:KEY_ACCESSTOKEN];
-    NSString* guid = [[NSUserDefaults standardUserDefaults] stringForKey:KEY_ACCESSTOKEN];
+    NSString* guid = [[NSUserDefaults standardUserDefaults] stringForKey:KEY_GUID];
     if(!atoken || !guid) {
     
         NSLog(@"No previously stored token");
@@ -258,6 +266,31 @@
 - (BOOL) isAppOld:(NSString*) pn {
     
     return ([self.dataFromServer objectForKey:pn.lowercaseString] != nil);
+}
+
+-(BOOL) NSStringIsValidEmail:(NSString *)checkString {
+    
+    BOOL stricterFilter = YES; // Discussion http://blog.logichigh.com/2010/09/02/validating-an-e-mail-address/
+    NSString *stricterFilterString = @"[A-Z0-9a-z\\._%+-]+@([A-Za-z0-9-]+\\.)+[A-Za-z]{2,4}";
+    NSString *laxString = @".+@([A-Za-z0-9]+\\.)+[A-Za-z]{2}[A-Za-z]*";
+    NSString *emailRegex = stricterFilter ? stricterFilterString : laxString;
+    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex];
+    return [emailTest evaluateWithObject:checkString];
+}
+
+- (NSString *) md5:(NSString *) input {
+    
+    const char *cStr = [input UTF8String];
+    unsigned char digest[16];
+    CC_MD5( cStr, strlen(cStr), digest ); // This is the md5 call
+    
+    NSMutableString *output = [NSMutableString stringWithCapacity:CC_MD5_DIGEST_LENGTH * 2];
+    
+    for(int i = 0; i < CC_MD5_DIGEST_LENGTH; i++)
+        [output appendFormat:@"%02x", digest[i]];
+    
+    return  output;
+    
 }
 
 @end

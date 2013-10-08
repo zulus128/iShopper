@@ -6,6 +6,10 @@
 //  Copyright (c) 2013 Zul. All rights reserved.
 //
 
+//password = vvv
+//guid = 1dvi926lwg11s317mq1bpknuddfp1310080724;
+//aiAccessToken = "104267018|v.kassin@informer.com|4786f3282f04de5b5c7317c490c6d922|aW5mb3JtZXIuY29t";
+
 enum AuthorizeType {AUTH_NEW, AUTH_EXIST};
 
 #define SERVICE_URL @"http://si.informer.com/si.iphone.php"
