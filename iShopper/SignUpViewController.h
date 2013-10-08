@@ -10,4 +10,10 @@
 
 @interface SignUpViewController : UIViewController
 
+- (IBAction)signup:(id)sender;
+
+@property (nonatomic, retain) IBOutlet UITextField* mailfield;
+@property (nonatomic, retain) IBOutlet UITextField* pass1;
+@property (nonatomic, retain) IBOutlet UITextField* pass2;
+
 @end

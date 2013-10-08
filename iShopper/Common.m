@@ -39,7 +39,7 @@
 	return self;
 }
 
-- (NSData*) sendToServer: (NSDictionary*) values {
+- (NSDictionary *) sendToServer: (NSDictionary*) values {
 
     NSError *error;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:values
@@ -77,21 +77,38 @@
     NSURLResponse *response;
     NSData *POSTReply1 = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
     NSData *POSTReply = [POSTReply1 gzipInflate];
-    NSString *theReply = [[NSString alloc] initWithBytes:[POSTReply bytes] length:[POSTReply length] encoding: NSASCIIStringEncoding];
+//    NSString *theReply = [[NSString alloc] initWithBytes:[POSTReply bytes] length:[POSTReply length] encoding: NSASCIIStringEncoding];
     
-    NSLog(@"Reply: %@", theReply);
+    NSDictionary *jsondict = [NSJSONSerialization JSONObjectWithData:POSTReply options:NSJSONReadingAllowFragments error:&error];
     
-    return POSTReply;
+    if (error)
+        return nil;
+
+    NSLog(@"Reply: %@", jsondict);
+    
+    return jsondict;
 
 }
 
-- (void) authorize {
+- (BOOL) authorizeWithEmail:(NSString*)mail andPassword:(NSString*)pass andType:(int)type {
 
+    NSString* atype = SAUTH_NEW;
+    switch (type) {
+        case AUTH_NEW:
+            atype = SAUTH_NEW;
+            break;
+        case AUTH_EXIST:
+            atype = SAUTH_EXIST;
+            break;
+    }
     NSMutableDictionary* dictionaryToOutput = [NSMutableDictionary dictionary];
     [dictionaryToOutput setObject:@"authorize" forKey:@"mode"];
-    [dictionaryToOutput setObject:@"vkassin@mail.ru" forKey:@"email"];
-    [dictionaryToOutput setObject:@"AI" forKey:@"authServiceName"];
-    [dictionaryToOutput setObject:@"pass" forKey:@"password"];
+//    [dictionaryToOutput setObject:@"vkassin@mail.ru" forKey:@"email"];
+    [dictionaryToOutput setObject:mail forKey:@"email"];
+//    [dictionaryToOutput setObject:@"AI" forKey:@"authServiceName"];
+    [dictionaryToOutput setObject:atype forKey:@"authServiceName"];
+//    [dictionaryToOutput setObject:@"pass" forKey:@"password"];
+    [dictionaryToOutput setObject:pass forKey:@"password"];
     [dictionaryToOutput setObject:@"Test User" forKey:@"name"];
     [dictionaryToOutput setObject:@"e8obrez9k1" forKey:@"deviceData"];
     [dictionaryToOutput setObject:[NSNumber numberWithInt:1] forKey:@"buildNum"];
@@ -106,18 +123,68 @@
 
     [dictionaryToOutput setObject:systemInfo forKey:@"systemInfo"];
 
-    [self sendToServer:dictionaryToOutput];
+    int code = -1;
+    NSString* err = @"Unknown error";
+    NSDictionary* reply = [self sendToServer:dictionaryToOutput];
+    if(reply) {
+        
+        code = ((NSNumber*)[reply valueForKey:JKEY_CODE]).intValue;
+        NSLog(@"returned code = %d", code);
+        
+        if(code) {
+            
+            err = [NSString stringWithFormat:@"%@. %@", [reply objectForKey:JKEY_ERRORCODE], [reply objectForKey:JKEY_ERRORMESSAGE]];
+        }
+        else {
+            
+            NSString* atoken = [reply objectForKey:JKEY_GUID];
+            NSString* guid = [[reply objectForKey:JKEY_USER] objectForKey:JKEY_ACCESSTOKEN];
+            [[NSUserDefaults standardUserDefaults] setObject:atoken forKey:KEY_ACCESSTOKEN];
+            [[NSUserDefaults standardUserDefaults] setObject:guid forKey:KEY_GUID];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+    
+            return YES;
+        }
+    }
+
+    [[[UIAlertView alloc] initWithTitle:@"Authorization Error" message:[NSString stringWithFormat:@"%@. Code: %d", err, code] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+
+    return NO;
 }
 
-- (void) check_valid {
+- (BOOL) check_valid {
 
-    NSMutableDictionary* dictionaryToOutput = [NSMutableDictionary dictionary];
+    NSString* atoken = [[NSUserDefaults standardUserDefaults] stringForKey:KEY_ACCESSTOKEN];
+    NSString* guid = [[NSUserDefaults standardUserDefaults] stringForKey:KEY_ACCESSTOKEN];
+    if(!atoken || !guid) {
+    
+        NSLog(@"No previously stored token");
+        return NO;
+    }
+    
+     NSMutableDictionary* dictionaryToOutput = [NSMutableDictionary dictionary];
     [dictionaryToOutput setObject:@"check_valid" forKey:@"mode"];
-    [dictionaryToOutput setObject:@"104267017|vkassin@mail.ru|pass|aW5mb3JtZXIuY29t" forKey:@"aiAccessToken"];
-    [dictionaryToOutput setObject:@"1dvi926lwg11s317mq1bpknuddfp1309071519" forKey:@"guid"];
+//    [dictionaryToOutput setObject:@"104267017|vkassin@mail.ru|pass|aW5mb3JtZXIuY29t" forKey:@"aiAccessToken"];
+//    [dictionaryToOutput setObject:@"1dvi926lwg11s317mq1bpknuddfp1309071519" forKey:@"guid"];
+    [dictionaryToOutput setObject:atoken forKey:@"aiAccessToken"];
+    [dictionaryToOutput setObject:guid forKey:@"guid"];
     [dictionaryToOutput setObject:[NSNumber numberWithInt:1] forKey:@"buildNum"];
 
-    [self sendToServer:dictionaryToOutput];
+    NSDictionary* reply = [self sendToServer:dictionaryToOutput];
+
+    int code = -1;
+    if(reply) {
+        
+        code = ((NSNumber*)[reply valueForKey:JKEY_CODE]).intValue;
+        NSLog(@"returned code = %d", code);
+        
+        if(!code) {
+            
+            return YES;
+        }
+    }
+    
+    return NO;
 
 }
 
@@ -129,7 +196,7 @@
     [dictionaryToOutput setObject:@"1dvi926lwg11s317mq1bpknuddfp1309071519" forKey:@"guid"];
     [dictionaryToOutput setObject:[NSNumber numberWithInt:1] forKey:@"buildNum"];
     
-    NSData* reply = [self sendToServer:dictionaryToOutput];
+    NSDictionary* reply = [self sendToServer:dictionaryToOutput];
     
     if(reply != nil) {
         
@@ -163,9 +230,9 @@
         }
     }
     
-    [dictionaryToOutput setObject:appInfo forKey:APPLIST_ID];
+    [dictionaryToOutput setObject:appInfo forKey:JKEY_APPLIST];
 
-    NSData* reply = [self sendToServer:dictionaryToOutput];
+    NSDictionary* reply = [self sendToServer:dictionaryToOutput];
     
     if(reply != nil) {
     
@@ -173,13 +240,13 @@
     }
 }
 
-- (void) storeFromServer:(NSData*) data {
+- (void) storeFromServer:(NSDictionary*) dict {
     
     self.dataFromServer = [NSMutableDictionary dictionary];
-    NSError* error;
-    NSDictionary* dict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
+//    NSError* error;
+//    NSDictionary* dict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
 //    NSLog(@"storeFromServer: %@", dict);
-    NSArray* arr = [dict objectForKey:APPLIST_ID];
+    NSArray* arr = [dict objectForKey:JKEY_APPLIST];
     for(NSDictionary* item in arr){
         
         NSString* pn = [item objectForKey:@"pn"];

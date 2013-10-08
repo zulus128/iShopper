@@ -73,9 +73,6 @@
                                 <rect key="frame" x="129" y="221" width="62" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Sign In"/>
-                                <connections>
-                                    <segue destination="4" kind="modal" id="g2N-2G-ezB"/>
-                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="c0l-nG-Gcr">
                                 <rect key="frame" x="129" y="287" width="62" height="30"/>
@@ -115,6 +112,9 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" id="89c-G0-lWI"/>
+                    <connections>
+                        <segue destination="4" kind="push" identifier="goTabBar" id="AMl-Ya-ZHQ"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ec8-ut-4jB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -228,6 +228,9 @@
                                 <rect key="frame" x="129" y="269" width="62" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Sign Up"/>
+                                <connections>
+                                    <action selector="signup:" destination="5D3-IN-miw" eventType="touchUpInside" id="uNl-sZ-Eve"/>
+                                </connections>
                             </button>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" id="zlE-tn-J34">
                                 <rect key="frame" x="129" y="69" width="171" height="30"/>
@@ -272,6 +275,12 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" id="hU5-0f-3Cn"/>
+                    <connections>
+                        <outlet property="mailfield" destination="zlE-tn-J34" id="66w-Nw-7Zu"/>
+                        <outlet property="pass1" destination="ehG-ho-I0Q" id="5HZ-Mc-6JG"/>
+                        <outlet property="pass2" destination="NDL-H4-Hit" id="a1s-kO-4hK"/>
+                        <segue destination="4" kind="push" identifier="goTabBar" id="6ZO-uH-Urb"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bJe-b3-FPU" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -281,6 +290,7 @@
         <scene sceneID="15">
             <objects>
                 <tabBarController id="4" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="8dV-nm-6vW"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" id="5">
                         <rect key="frame" x="0.0" y="431" width="320" height="49"/>
@@ -306,4 +316,7 @@
         <simulatedOrientationMetrics key="orientation"/>
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
+    <inferredMetricsTieBreakers>
+        <segue reference="AMl-Ya-ZHQ"/>
+    </inferredMetricsTieBreakers>
 </document>
