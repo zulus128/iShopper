@@ -20,6 +20,22 @@
     
     [MagicalRecord setupCoreDataStackWithStoreNamed:@"AppDataModel.sqlite"];
     
+    
+    self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
+
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPhone" bundle:nil];
+    
+    UIViewController *viewController =  [storyboard instantiateViewControllerWithIdentifier:@"startLogin"];
+    
+    self.window.rootViewController = viewController;
+    [self.window makeKeyAndVisible];
+    
+    
+//    UIStoryboard *storyboard = self.window.rootViewController.storyboard;
+//    UIViewController *rootViewController = [storyboard instantiateViewControllerWithIdentifier:@"startLogin"];
+//    self.window.rootViewController = rootViewController;
+//    [self.window makeKeyAndVisible];
+    
     return YES;
 }
 							
