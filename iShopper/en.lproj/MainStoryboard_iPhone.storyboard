@@ -73,6 +73,9 @@
                                 <rect key="frame" x="129" y="221" width="62" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Sign In"/>
+                                <connections>
+                                    <action selector="signin:" destination="UDf-kg-6uG" eventType="touchUpInside" id="cym-lA-Gz7"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="c0l-nG-Gcr">
                                 <rect key="frame" x="129" y="287" width="62" height="30"/>

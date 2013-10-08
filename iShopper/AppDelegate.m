@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import "Common.h"
 
 @implementation AppDelegate
 
@@ -23,9 +24,11 @@
     
     self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
 
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPhone" bundle:nil];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)?
+@"MainStoryboard_iPad":@"MainStoryboard_iPhone" bundle:nil];
     
-    UIViewController *viewController =  [storyboard instantiateViewControllerWithIdentifier:@"startLogin"];
+    BOOL b = [[Common instance] check_valid];
+    UIViewController *viewController =  [storyboard instantiateViewControllerWithIdentifier:b?@"startNoLogin":@"startLogin"];
     
     self.window.rootViewController = viewController;
     [self.window makeKeyAndVisible];

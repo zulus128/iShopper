@@ -10,4 +10,9 @@
 
 @interface LoginViewController : UIViewController
 
+- (IBAction)signin:(id)sender;
+
+@property (nonatomic, retain) IBOutlet UITextField* mailfield;
+@property (nonatomic, retain) IBOutlet UITextField* pass1;
+
 @end
